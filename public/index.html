@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Klik.link</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card-bg: #10162a;
+    --border: #2a3352;
+    --text: #e8ecf7;
+    --muted: #8b93ab;
+    --pink: #ff2d78;
+    --purple: #7b3fe4;
+    --blue: #2d8fff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .logo {
+    font-size: 34px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #ff2d78, #7b3fe4 50%, #2d8fff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .tagline {
+    color: var(--muted);
+    margin-top: 6px;
+    font-size: 15px;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 480px;
+    margin: 0 auto 16px;
+  }
+  .field-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .field-label .icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .hint { color: var(--muted); font-size: 12px; margin: -6px 0 14px; }
+  input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #0d1224;
+    color: var(--text);
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+  input::placeholder { color: #5c6584; }
+  button.generate {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue));
+    cursor: pointer;
+  }
+  button.generate:disabled { opacity: 0.6; }
+  .result-card {
+    display: none;
+  }
+  .result-card.show { display: block; }
+  .success-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .check {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #22c55e; color: white; display: flex;
+    align-items: center; justify-content: center; font-size: 13px;
+  }
+  .link-box {
+    border: 1px solid var(--purple);
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    word-break: break-all;
+  }
+  .link-box a { color: #4db8ff; text-decoration: none; font-weight: 600; }
+  .actions { display: flex; gap: 10px; }
+  .actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--purple);
+    background: #171f38;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .note { color: var(--muted); font-size: 12px; margin-top: 12px; }
+  .error { color: #ff6b6b; font-size: 13px; margin-top: -6px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🔗 Klik.link</div>
+  <div class="tagline">Link panjang jadi pendek, lebih praktis!</div>
+</div>
+
+<div class="card">
+  <div class="field-label"><span class="icon">🌐</span> Klik.link</div>
+  <input id="url" type="url" placeholder="Masukkan link panjang di sini..." />
+
+  <div class="field-label"><span class="icon">✏️</span> Edit Backhalf (Opsional)</div>
+  <input id="slug" type="text" placeholder="contoh: vidio-keren" />
+  <div class="hint">Biarkan kosong jika ingin dibuat otomatis.</div>
+
+  <div id="error" class="error" style="display:none"></div>
+  <button class="generate" id="btn">🔗 Generate</button>
+</div>
+
+<div class="card result-card" id="resultCard">
+  <div class="success-row"><span class="check">✓</span> Link berhasil dibuat!</div>
+  <div class="link-box">
+    🔗 <a id="resultLink" href="#" target="_blank"></a>
+  </div>
+  <div class="actions">
+    <button id="copyBtn">📋 Salin</button>
+    <button id="shareBtn">📤 Share</button>
+  </div>
+  <div class="note">ℹ️ Link ini akan selalu aktif.</div>
+</div>
+
+<script>
+  const btn = document.getElementById('btn');
+  const errorBox = document.getElementById('error');
+  const resultCard = document.getElementById('resultCard');
+  const resultLink = document.getElementById('resultLink');
+
+  btn.addEventListener('click', async () => {
+    const url = document.getElementById('url').value.trim();
+    const slug = document.getElementById('slug').value.trim();
+    errorBox.style.display = 'none';
+    resultCard.classList.remove('show');
+
+    if (!url) {
+      errorBox.textContent = 'Isi dulu link panjangnya ya.';
+      errorBox.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Membuat...';
+
+    try {
+      const res = await fetch('/api/shorten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, slug: slug || undefined }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        errorBox.textContent = data.error || 'Gagal membuat link.';
+        errorBox.style.display = 'block';
+      } else {
+        resultLink.textContent = data.short_url;
+        resultLink.href = data.short_url;
+        resultCard.classList.add('show');
+      }
+    } catch (e) {
+      errorBox.textContent = 'Ada masalah koneksi, coba lagi.';
+      errorBox.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔗 Generate';
+    }
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(resultLink.textContent);
+  });
+
+  document.getElementById('shareBtn').addEventListener('click', () => {
+    if (navigator.share) {
+      navigator.share({ url: resultLink.textContent });
+    } else {
+      navigator.clipboard.writeText(resultLink.textContent);
+    }
+  });
+</script>
+
+</body>
+  </html>
+  
