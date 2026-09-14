@@ -130,6 +130,53 @@
   }
   .note { color: var(--muted); font-size: 12px; margin-top: 12px; }
   .error { color: #ff6b6b; font-size: 13px; margin-top: -6px; margin-bottom: 12px; }
+
+  .support-card {
+    border-color: var(--purple);
+    text-align: center;
+  }
+  .support-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 700;
+    color: #4db8ff;
+    margin-bottom: 10px;
+  }
+  .support-title .line {
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--purple), transparent);
+  }
+  .support-text {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+  .donate-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #22c55e, var(--blue));
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 24px;
+  }
+  .footer .brand {
+    color: #22c55e;
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
@@ -222,6 +269,22 @@
   });
 </script>
 
+<div class="card support-card">
+  <div class="support-title">
+    <span class="line"></span>
+    <span>💙 Support</span>
+    <span class="line"></span>
+  </div>
+  <div class="support-text">Pinjam dulu seratus kalo tidak ada ikhlasin aja seratus.</div>
+  <a class="donate-btn" href="https://sociabuzz.com/bangudin0402/tribe" target="_blank" rel="noopener">
+    ☕ Donasi
+  </a>
+</div>
+
+<div class="footer">
+  Created by <span class="brand">kotoko</span>
+</div>
+
 </body>
-  </html>
-  
+    </html>
+    
